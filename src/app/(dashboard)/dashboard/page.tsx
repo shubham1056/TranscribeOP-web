@@ -1,10 +1,10 @@
 'use client';
-
+ 
 import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { ArrowUpRight, FileText, MessageSquareText, Sparkles, Upload } from 'lucide-react';
 import Link from 'next/link';
-
+ 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,10 +13,10 @@ import { documentsApi, sopsApi } from '@/lib/api/endpoints';
 import { ROUTES } from '@/lib/constants';
 import { formatDate } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
-
+ 
 export default function DashboardPage() {
   const user = useAuthStore((s) => s.user);
-
+ 
   const { data: sops, isLoading: loadingSops } = useQuery({
     queryKey: ['sops'],
     queryFn: sopsApi.list,
@@ -25,13 +25,13 @@ export default function DashboardPage() {
     queryKey: ['documents'],
     queryFn: documentsApi.list,
   });
-
+ 
   const stats = [
     { label: 'SOPs Generated', value: sops?.length ?? 0, icon: FileText },
     { label: 'Documents Uploaded', value: docs?.length ?? 0, icon: Upload },
     { label: 'GPT-5 Model', value: 'Active', icon: Sparkles },
   ];
-
+ 
   return (
     <div className="p-6 lg:p-10 max-w-7xl mx-auto space-y-8">
       <motion.div
@@ -50,7 +50,7 @@ export default function DashboardPage() {
             What knowledge will you turn into an SOP today?
           </p>
         </div>
-
+ 
         <div className="flex gap-2">
           <Button asChild variant="secondary">
             <Link href={ROUTES.upload}>
@@ -64,7 +64,7 @@ export default function DashboardPage() {
           </Button>
         </div>
       </motion.div>
-
+ 
       <div className="grid sm:grid-cols-3 gap-4">
         {stats.map((s, i) => (
           <motion.div
@@ -87,7 +87,7 @@ export default function DashboardPage() {
           </motion.div>
         ))}
       </div>
-
+ 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Recent SOPs</CardTitle>
@@ -108,7 +108,7 @@ export default function DashboardPage() {
             sops.slice(0, 6).map((sop) => (
               <Link
                 key={sop.id}
-                href={ROUTES.sop(sop.id)}
+                href={ROUTES.sop(sop.id) as any}
                 className="flex items-center justify-between rounded-md px-3 py-3 hover:bg-ivory-100 transition-colors group"
               >
                 <div className="flex items-center gap-3 min-w-0">

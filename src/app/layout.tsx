@@ -1,32 +1,30 @@
-import type { Metadata, Viewport } from 'next';
-import { Inter, Source_Serif_4 } from 'next/font/google';
-
-import { AppProviders } from '@/providers/app-providers';
-import { APP_NAME, APP_TAGLINE } from '@/lib/constants';
-
-import './globals.css';
-
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
-const serif = Source_Serif_4({ subsets: ['latin'], variable: '--font-serif', display: 'swap' });
-
-export const metadata: Metadata = {
-  title: { default: `${APP_NAME} — ${APP_TAGLINE}`, template: `%s · ${APP_NAME}` },
-  description: APP_TAGLINE,
-  applicationName: APP_NAME,
-};
-
-export const viewport: Viewport = {
-  themeColor: '#FAF9F5',
-  width: 'device-width',
-  initialScale: 1,
-};
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+'use client';
+ 
+import { useRouter } from 'next/navigation';
+import { useEffect, type ReactNode } from 'react';
+ 
+import { Sidebar } from '@/components/layout/sidebar';
+import { Topbar } from '@/components/layout/topbar';
+import { ROUTES } from '@/lib/constants';
+import { useAuthStore } from '@/stores/auth-store';
+ 
+export default function DashboardLayout({ children }: { children: ReactNode }) {
+  const router = useRouter();
+  const { user, accessToken } = useAuthStore();
+ 
+  useEffect(() => {
+    if (!accessToken || !user) router.replace(ROUTES.login);
+  }, [accessToken, user, router]);
+ 
+  if (!accessToken || !user) return null;
+ 
   return (
-    <html lang="en" className={`${inter.variable} ${serif.variable}`} suppressHydrationWarning>
-      <body className="min-h-screen font-sans">
-        <AppProviders>{children}</AppProviders>
-      </body>
-    </html>
+    <div className="min-h-screen flex">
+      <Sidebar />
+      <div className="flex-1 flex flex-col min-w-0">
+        <Topbar />
+        <main className="flex-1 overflow-auto">{children}</main>
+      </div>
+    </div>
   );
 }
