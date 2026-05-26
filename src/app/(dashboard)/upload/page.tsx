@@ -1,11 +1,11 @@
 'use client';
-
+ 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Loader2, Sparkles } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
-
+ 
 import { Dropzone, type UploadFileItem } from '@/components/upload/dropzone';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -15,7 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { documentsApi, sopsApi } from '@/lib/api/endpoints';
 import { ROUTES } from '@/lib/constants';
 import { formatBytes } from '@/lib/utils';
-
+ 
 export default function UploadPage() {
   const router = useRouter();
   const qc = useQueryClient();
@@ -23,9 +23,9 @@ export default function UploadPage() {
   const [selectedDoc, setSelectedDoc] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [instructions, setInstructions] = useState('');
-
+ 
   const { data: documents } = useQuery({ queryKey: ['documents'], queryFn: documentsApi.list });
-
+ 
   const upload = useMutation({
     mutationFn: async (file: File) => documentsApi.upload(file),
     onSuccess: (doc) => {
@@ -34,17 +34,17 @@ export default function UploadPage() {
       toast.success(`Uploaded ${doc.filename}`);
     },
   });
-
+ 
   const generate = useMutation({
     mutationFn: () => sopsApi.generate(selectedDoc!, title || undefined, instructions || undefined),
     onSuccess: (sop) => {
       toast.success('SOP generation started');
       qc.invalidateQueries({ queryKey: ['sops'] });
-      router.push(ROUTES.sop(sop.id));
+      router.push(ROUTES.sop(sop.id) as any);
     },
     onError: (e: any) => toast.error(e?.response?.data?.error?.message ?? 'Failed to start generation'),
   });
-
+ 
   const onFiles = async (files: File[]) => {
     const newItems: UploadFileItem[] = files.map((f) => ({
       id: `${f.name}-${Date.now()}-${Math.random()}`,
@@ -53,7 +53,7 @@ export default function UploadPage() {
       status: 'uploading',
     }));
     setItems((prev) => [...prev, ...newItems]);
-
+ 
     for (const it of newItems) {
       try {
         const doc = await documentsApi.upload(it.file, (pct) =>
@@ -75,7 +75,7 @@ export default function UploadPage() {
       }
     }
   };
-
+ 
   return (
     <div className="p-6 lg:p-10 max-w-5xl mx-auto space-y-8">
       <div>
@@ -88,13 +88,13 @@ export default function UploadPage() {
           chunk it for GPT-5, then generate a structured SOP.
         </p>
       </div>
-
+ 
       <Dropzone
         items={items}
         onFiles={onFiles}
         onRemove={(id) => setItems((prev) => prev.filter((i) => i.id !== id))}
       />
-
+ 
       <Card>
         <CardHeader>
           <CardTitle>Select source & generate SOP</CardTitle>
@@ -128,7 +128,7 @@ export default function UploadPage() {
               )}
             </div>
           </div>
-
+ 
           <div className="space-y-2">
             <label className="text-xs font-medium text-ink-700 uppercase tracking-wider">
               SOP title (optional)
@@ -139,7 +139,7 @@ export default function UploadPage() {
               onChange={(e) => setTitle(e.target.value)}
             />
           </div>
-
+ 
           <div className="space-y-2">
             <label className="text-xs font-medium text-ink-700 uppercase tracking-wider">
               Custom instructions (optional)
@@ -151,7 +151,7 @@ export default function UploadPage() {
               rows={4}
             />
           </div>
-
+ 
           <Button
             size="lg"
             className="w-full"
@@ -170,3 +170,5 @@ export default function UploadPage() {
     </div>
   );
 }
+ 
+ 
