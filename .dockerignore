@@ -1,0 +1,22 @@
+# Only exclude things that should NEVER go into the build context.
+# Do NOT exclude tsconfig.json, next.config.mjs, postcss.config.mjs,
+# tailwind.config.ts, .eslintrc.json, or anything under src/ — webpack
+# needs all of those to resolve path aliases (@/*) and compile.
+
+node_modules
+.next
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.idea
+.vscode
+Dockerfile
+.dockerignore
+README.md
+.github
